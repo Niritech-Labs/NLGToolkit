@@ -1,40 +1,37 @@
-import npnuklear as nk
-from npnk_wbackend import Bk
-bk = Bk()
-bk.GLFWInit()
-bk.CreateWindow(800, 600, "Red Rectangle", True, False)
+from Backends import NGTApp, flag
+from Widgets import *
+
+bk = NGTApp(800,600,'aga',False)
+
+button = NGTButton("DroidSans.ttf",None,None)
+button1 = NGTButton("DroidSans.ttf",None,None)
+button2 = NGTButton("DroidSans.ttf",None,None)
+button3 = NGTButton("DroidSans.ttf",None,None)
+group = NGTGroup('mygroup',flag(nk.NK_WINDOW_BACKGROUND|nk.NK_WINDOW_NO_SCROLLBAR))
+layout = NGTRowLayout(400)
+bk.addWidget(layout)
+layout.addWidget(button,True,200)
+layout.addWidget(group,False)
+layout.addWidget(button1,True,200)
+layout1 = NGTRowLayout(40)
+group.addWidget(layout1)
+layout1.addWidget(button2,True,300)
+layout1.addWidget(button3,True,300)
+
+label = NGTLabel('laaaaaaaaaaaaaaaaaaaable',flag(nk.NK_TEXT_ALIGN_CENTERED))
+
+layout1.addWidget(label,True,300)
+
+def lms(var):
+    x,y = group.GetScroll()
+    group.SetScroll(x + 60,0)
+
+def rms(var):
+    x,y = group.GetScroll()
+    group.SetScroll(x - 60,0)
+
+button.LMBBind(lms)
+button.RMBBind(rms)
 
 
-def flag(flag) -> int:
-    return int(flag.value)
-
-nk_ctx:nk.nk_context = bk.GetNKContext()
-
-while not bk.ShouldClose():
-    x,y = bk.GetWindowSize()
-    bk.PollEvents()
-    bk.NewFrame()
-
-    if (nk.mnk_begin(nk_ctx, "Demo", nk.mnk_rect(0, 0, x, y),flag(nk.NK_WINDOW_BACKGROUND))):
-        nk.mnk_layout_row_static(nk_ctx, 30, 80, 1)
-        if (nk.mnk_button_label(nk_ctx, "button")):
-                print("button pressed\n")
-        if (nk.mnk_button_label(nk_ctx, "button")):
-                print("button pressed\n")
-        if (nk.mnk_button_label(nk_ctx, "button")):
-                print("button pressed\n")
-        if (nk.mnk_button_label(nk_ctx, "button")):
-                print("button pressed\n")
-
-        if (nk.mnk_button_label(nk_ctx, "button")):
-                print("button pressed\n")
-        
-
-    nk.mnk_end(nk_ctx)
-    
-    bk.Render()
-   
-
-    
-
-bk.Shutdown()
+bk.Start()

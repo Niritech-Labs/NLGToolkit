@@ -27,7 +27,7 @@ class NGTApp():
         self.counter = 0
         self.win.CreateWindow(self.w, self.h, self.name, True, False)
         self.ctx = self.win.GetNKContext()
-        nk.mnk_font_atlas_begin
+        self.win.InitFont(True,'DroidSans.ttf',18)
 
         self.widgets:list[NGTWidget] = []
 
@@ -46,7 +46,7 @@ class NGTApp():
         try:
             while self.running:
                 if not self.EventQueue.empty():
-                    request:tuple[str,object,object] = self.EventQueue.get() # command / class or none
+                    request:tuple[str,object,object] = self.EventQueue.get() 
                     self.handleRequest(request)
     
         except Exception as E:
@@ -97,29 +97,3 @@ class NGTApp():
     
 
         
-bk = NGTApp(800,600,'aga',False)
-
-button = NGTButton("DroidSans.ttf",None,None)
-button1 = NGTButton("DroidSans.ttf",None,None)
-button2 = NGTButton("DroidSans.ttf",None,None)
-button3 = NGTButton("DroidSans.ttf",None,None)
-group = NGTGroup('mygroup',flag(nk.NK_WINDOW_BACKGROUND|nk.NK_WINDOW_SCROLL_AUTO_HIDE))
-layout = NGTRowLayout(400)
-bk.addWidget(layout)
-layout.addWidget(button,True,200)
-layout.addWidget(group,False)
-layout.addWidget(button1,True,200)
-layout1 = NGTRowLayout(40)
-group.addWidget(layout1)
-layout1.addWidget(button2,True,300)
-layout1.addWidget(button3,True,300)
-
-
-
-def lms(var):
-    print('clicked')
-
-button.lmouseClickBind(lms)
-
-
-bk.Start()

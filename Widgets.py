@@ -55,36 +55,53 @@ class NGTWidget:
 
 
 class NGTButton(NGTWidget):
-    def __init__(self,label:str | None ,icon:nk.nk_image | None,NK_TEXT_FLAG:int | None):
+    def __init__(self,label:str | None = None,icon:nk.nk_image | None = None,NK_TEXT_FLAG:int | None = None):
         super().__init__('Button')
-        self.callable = None
+        self.rmb = None
+        self.lmb = None
         self.label = label
         self.icon = icon
-        self.mode = 0
+        self.baked = None
         self.flag = NK_TEXT_FLAG
+
+
+        self.mode = 0
         if icon:
             self.mode = 1
         if icon and label and not type(self.flag) is type(None):
             self.mode = 2
         
-        
+    def clickHandle(self):
+        if self.ctx.input.mouse.buttons[1].clicked:
+            self.app.EventQueue.put(('call',self.lmb,False))
+        else:
+            self.app.EventQueue.put(('call',self.rmb,False))
 
 
     def update(self):
+        """if self.ctx.input.mouse.buttons[1].down:
+            self.ctx.input.mouse.buttons[0].down = True
+        if self.ctx.input.mouse.buttons[1].clicked:
+            self.ctx.input.mouse.buttons[0].clicked = True"""
+        
         if self.mode == 1:
-            if (nk.mnk_button_image(self.ctx,self.icon)) and self.callable:
-                self.app.EventQueue.put(('call',self.callable,False))
+            if (nk.mnk_button_image(self.ctx,self.icon)):
+                self.clickHandle()
         elif self.mode == 2:
-            if (nk.mnk_button_image_label(self.ctx,self.icon,self.label,self.flag)) and self.callable:
-                self.app.EventQueue.put(('call',self.callable,False))
+            if (nk.mnk_button_image_label(self.ctx,self.icon,self.label,self.flag)):
+                self.clickHandle()
         else:
-            if (nk.mnk_button_label(self.ctx, self.label)) and self.callable:
-                self.app.EventQueue.put(('call',self.callable,False))
+            if (nk.mnk_button_label(self.ctx, self.label)):
+                self.clickHandle()
         super().update()
 
-    def lmouseClickBind(self,callabl):
-        self.callable = callabl
-        self.app.EventQueue.put(('add',self.callable,False))
+    def RMBBind(self,call):
+        self.rmb = call
+        self.app.EventQueue.put(('add',self.rmb,False))
+
+    def LMBBind(self,call):
+        self.lmb = call
+        self.app.EventQueue.put(('add',self.lmb,False))
 
 class NGTRowLayout(NGTWidget):
     def __init__(self,y:int):
@@ -114,9 +131,43 @@ class NGTGroup(NGTWidget):
         super().__init__(f'Group {name}')
         self.lname = name
         self.flags = NK_WINDOW_FLAGS
+        self.toScroll = False
+        self.x = 0
+        self.y = 0
+        self.toX = 0
+        self.toY = 0
+        self.speed = 0.2
+
+    def SetScroll(self,x:int,y:int):
+
+        self.toX = max(x,0)
+        self.toY = max(y,0)
+        self.toScroll = True
+
+    def GetScroll(self) -> tuple[int,int]:
+        return self.x,self.y
 
     def update(self):
+        if self.toScroll:
+            self.x = int(self.x + (self.toX - self.x) * self.speed)
+            self.y = int(self.y + (self.toY - self.y) * self.speed)
+            nk.mnk_group_set_scroll(self.ctx,self.lname,self.x,self.y)
+            if (self.toY -1 <= self.y <= self.toY + 1) and (self.toX - 1 <= self.x <= self.toX + 1):
+                self.toScroll = False
+        
         nk.mnk_group_begin(self.ctx,self.lname,self.flags)
         super().update()
         nk.mnk_group_end(self.ctx)
+        if self.app.counter == 6:
+            nk.mnk_group_get_scroll(self.ctx,self.lname,self.x,self.y)
 
+
+class NGTLabel(NGTWidget):
+    def __init__(self, name,NK_TEXT_FLAG):
+        super().__init__(name)
+        self.flag = NK_TEXT_FLAG
+        self.lname = name
+
+    def update(self):
+        nk.mnk_label(self.ctx,self.lname,self.flag)
+        super().update()
