@@ -5,6 +5,7 @@
 from NLUtils.Logger import NLLogger
 
 import npnuklear as nk
+from npnk_wbackend import Bk
 
 def Baker(mtds:list[tuple[object,tuple]]):
     env = {}
@@ -72,18 +73,14 @@ class NGTButton(NGTWidget):
             self.mode = 2
         
     def clickHandle(self):
-        if self.ctx.input.mouse.buttons[1].clicked:
+        res = self.app.win.GetClick(self.ctx)
+        if res == 1:
             self.app.EventQueue.put(('call',self.lmb,False))
-        else:
+        if res == 2:
             self.app.EventQueue.put(('call',self.rmb,False))
 
 
     def update(self):
-        """if self.ctx.input.mouse.buttons[1].down:
-            self.ctx.input.mouse.buttons[0].down = True
-        if self.ctx.input.mouse.buttons[1].clicked:
-            self.ctx.input.mouse.buttons[0].clicked = True"""
-        
         if self.mode == 1:
             if (nk.mnk_button_image(self.ctx,self.icon)):
                 self.clickHandle()
