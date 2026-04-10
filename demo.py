@@ -1,5 +1,6 @@
-from Backends import NGTApp, flag
+from Backends import NGTApp
 from Widgets import *
+
 
 bk = NGTApp(800,600,'aga',False)
 

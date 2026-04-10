@@ -4,8 +4,8 @@
 # the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 import queue
 import threading
-import npnuklear as nk
-from npnk_wbackend import Bk
+import NPNK as nk
+from NPWayland import Window
 from Widgets import *
 from NLUtils.Logger import NLLogger
 
@@ -18,7 +18,7 @@ class NGTApp():
         self.Logger = NLLogger(production,'app: ' + name)
 
         self.production = production
-        self.win = Bk()
+        self.win = Window()
         self.win.GLFWInit()
         self.running = False
         self.w = width

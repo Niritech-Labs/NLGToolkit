@@ -4,8 +4,10 @@
 # the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 from NLUtils.Logger import NLLogger
 
-import npnuklear as nk
-from npnk_wbackend import Bk
+import NPNK as nk
+from NPWayland import Window
+def flag(flag) -> int:
+    return int(flag.value)
 
 def Baker(mtds:list[tuple[object,tuple]]):
     env = {}
@@ -73,14 +75,17 @@ class NGTButton(NGTWidget):
             self.mode = 2
         
     def clickHandle(self):
-        res = self.app.win.GetClick(self.ctx)
-        if res == 1:
+     
+        if (nk.mnk_widget_is_mouse_clicked(self.ctx, flag(nk.NK_BUTTON_RIGHT))):
+            print('lkm')
             self.app.EventQueue.put(('call',self.lmb,False))
-        if res == 2:
-            self.app.EventQueue.put(('call',self.rmb,False))
+        else:
+            print('pkm')
 
 
     def update(self):
+        if self.app.win.mnk_button_right(self.ctx):
+            self.app.EventQueue.put(('call',self.rmb,False))
         if self.mode == 1:
             if (nk.mnk_button_image(self.ctx,self.icon)):
                 self.clickHandle()
